@@ -1,3 +1,9 @@
+// Programmer: Tanner Winkelman
+// Instructor: Michael Gosnell
+// Class: cs2500 Section: A
+// Summer Semester 2017
+// Purpose: Compare the complexity of mergesort, bubblesort, and insertionsort.
+
 #include <iostream>
 using namespace std;
 
@@ -73,11 +79,58 @@ void mergesort( T A[], const long min, const long max )
 }
 
 
+template<typename T>
+void my_swap( T & i1, T & i2 )
+{
+  T swapSpace = i1;
+  i1 = i2;
+  i2 = swapSpace;
+  return;
+}
+
+template<typename T>
+void insertionsort( T A[], const long min, const long max )
+{
+  for( long i = min + 1; i <= max; i++ )
+  {
+    long j = i;
+    while( j > min && A[j] < A[j-1] )
+    {
+      my_swap( A[j-1], A[j] );
+      j--;
+    }
+  }
+  
+  return;
+}
+
+
+template<typename T>
+void bubblesort( T A[], const long min, const long max )
+{
+  // invariant: at each execution of the gaurd, the last i elements are the largest i elements in sorted order
+  for( long i = 0; i < max - min + 1; i++ )
+  {
+    // invariant: at each execution of the gaurd, the largest element of A[min...j] is A[j]
+    for( long j = min; j < max - i; j++ )
+    {
+      if( A[j+1] < A[j] )
+      {
+        my_swap( A[j+1], A[j] );
+      }
+    }
+  }
+  
+  return;
+}
+
+
+
 int main()
 {
-  long D[] = { 5,1,6,3,7,4,7 };
+  long D[] = { 2,1,6,3,7,4,0 };
   
-  mergesort( D, 0, 6 );
+  bubblesort( D, 0, 6 );
   
   for( long k = 0; k < 7; k++ )
     cout << D[k] << " " << flush;
