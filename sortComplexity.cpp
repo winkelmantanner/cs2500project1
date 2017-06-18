@@ -128,11 +128,11 @@ void bubblesort( T A[], const long min, const long max )
 
 int main()
 {
-  long D[] = { 2,1,6,3,7,4,0 };
+  long D[] = { 10,2,1,6,3,7,4,0,11,10 };
   
-  bubblesort( D, 0, 6 );
+  mergesort( D, 0, 9 );
   
-  for( long k = 0; k < 7; k++ )
+  for( long k = 0; k < 10; k++ )
     cout << D[k] << " " << flush;
   cout << endl;
   
