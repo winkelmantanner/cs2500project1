@@ -5,12 +5,19 @@
 // Purpose: Compare the complexity of mergesort, bubblesort, and insertionsort.
 
 #include <iostream>
+#include <cmath>
+#include <ctime>
+#include <cstdlib>
 using namespace std;
 
 
-const string WEIGHT_STRING = "heavy";
+const string WEIGHT_STRING = "heavyheavyheavyheavyheavyheavyheavyheavyheavy";
 
-const long INFINITY = 123456;
+const long INF = 2147483647;
+
+const long MAX_SIZE = 100000;
+
+const long MAX_DATUM_VALUE = 1000000;
 
 struct dataType
 {
@@ -44,7 +51,7 @@ void merge(
   {
     L[i-start] = A[i];
   }
-  L[m - start] = INFINITY; // sentinel
+  L[m - start] = INF; // sentinel
   long i = 0;
   long j = 0;
   for( long k = 0; k < size; k++ )
@@ -124,17 +131,59 @@ void bubblesort( T A[], const long min, const long max )
   return;
 }
 
+enum DataState
+{
+  presorted,
+  reversesorted,
+  randomData
+};
+
+
+
+
+void generateData( long A[], const long size, const DataState state )
+{
+  for( long k = 0; k < size; k++ )
+  {
+    A[k] = rand() % MAX_DATUM_VALUE;
+  }
+  if( state == presorted )
+  {
+    mergesort( A, 0, size - 1 );
+  }
+  else if( state == reversesorted )
+  {
+    mergesort( A, 0, size - 1 );
+    for( long j = 0; j < size / 2; j++ )
+      my_swap( A[j], A[size - j - 1] );
+  }
+  return;
+}
+
 
 
 int main()
 {
-  long D[] = { 10,2,1,6,3,7,4,0,11,10 };
+  long data[MAX_SIZE];
   
-  mergesort( D, 0, 9 );
+  srand( time(NULL) );
   
-  for( long k = 0; k < 10; k++ )
-    cout << D[k] << " " << flush;
-  cout << endl;
+  long n = 1;
+  for( long k = 1; n * sqrt(2) < MAX_SIZE; k++ )
+  {
+    n = pow( 2, (k/2) );
+    if( k % 2 == 1 )
+      n = floor( n * sqrt(2) );
+    generateData( data, n, randomData );
+    clock_t start;
+    double duration;
+    start = clock();
+    mergesort( data, 0, n - 1 );
+    duration = clock() - start;
+    
+    cout << duration << " " << flush;
+    
+  }
   
   
   
