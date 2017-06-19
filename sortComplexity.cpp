@@ -18,7 +18,7 @@ const long INF = 2147483647;
 const long MAX_SIZE = 100000;
 
 const long MAX_DATUM_VALUE = 1000000;
-
+/*
 struct dataType
 {
   long key;
@@ -34,7 +34,7 @@ bool operator<( const dataType & lhs, const dataType & rhs )
 {
   return lhs.key < rhs.key;
 }
-
+*/
 
 // Pre: start is the index of the first element in the left division; m is the index of the first element in the right division; end is the index of the last element in the right division; each division is sorted
 template<typename T>
@@ -160,11 +160,20 @@ void generateData( long A[], const long size, const DataState state )
   return;
 }
 
+template<typename T>
+void datacopy( T* source, T* destinantion, const long size )
+{
+  for( long k = 0; k < size; k++ )
+    destinantion[k] = source[k];
+  return;
+}
 
 
 int main()
 {
   long data[MAX_SIZE];
+  long original_data[MAX_SIZE];
+  
   
   srand( time(NULL) );
   
@@ -174,14 +183,54 @@ int main()
     n = pow( 2, (k/2) );
     if( k % 2 == 1 )
       n = floor( n * sqrt(2) );
-    generateData( data, n, randomData );
-    clock_t start;
-    double duration;
-    start = clock();
-    mergesort( data, 0, n - 1 );
-    duration = clock() - start;
     
-    cout << duration << " " << flush;
+    
+    for( short dsIndex = 0; dsIndex < 3; dsIndex++ )
+    {
+      if( dsIndex == 0 )
+      {
+        generateData( original_data, n, randomData );
+      }
+      else if( dsIndex == 1 )
+      {
+        generateData( original_data, n, presorted );
+      }
+      else
+      {
+        generateData( original_data, n, reversesorted );
+      }
+      
+      
+      datacopy( original_data, data, n );
+      
+      clock_t start;
+      double duration;
+      start = clock();
+      mergesort( data, 0, n - 1 );
+      duration = clock() - start;
+      
+      cout << (duration / CLOCKS_PER_SEC) << " " << flush;
+      
+      
+      datacopy( original_data, data, n );
+      
+      start = clock();
+      insertionsort( data, 0, n - 1 );
+      duration = clock() - start;
+      
+      cout << (duration / CLOCKS_PER_SEC) << " " << flush;
+      
+      
+      datacopy( original_data, data, n );
+      
+      start = clock();
+      bubblesort( data, 0, n - 1 );
+      duration = clock() - start;
+      
+      cout << (duration / CLOCKS_PER_SEC) << " ";
+      cout << k << " " << n << endl;
+    }
+    
     
   }
   
