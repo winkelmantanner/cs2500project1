@@ -210,17 +210,17 @@ int main()
   try
   {
     
-    
-    long n = 1;
-    for( long k = 1; n * sqrt(2) < MAX_SIZE; k++ )
+    for( short dsIndex = 0; dsIndex < 3; dsIndex++ )
     {
-      n = pow( 2, (k/2) );
-      if( k % 2 == 1 )
-        n = floor( n * sqrt(2) );
-      
-      
-      for( short dsIndex = 0; dsIndex < 3; dsIndex++ )
+      long n = 1;
+      for( long k = 1; n * sqrt(2) < MAX_SIZE; k++ )
       {
+        n = pow( 2, (k/2) );
+        if( k % 2 == 1 )
+          n = floor( n * sqrt(2) );
+      
+      
+      
         if( dsIndex == 0 )
         {
           generateData( original_data, n, randomData );
@@ -228,10 +228,14 @@ int main()
         else if( dsIndex == 1 )
         {
           generateData( original_data, n, presorted );
+          if( !isSorted( original_data, n ) )
+            throw Error( "Error: generate data failed to generate sorted data." );
         }
         else
         {
           generateData( original_data, n, reversesorted );
+          if( !isSorted( original_data, n, reversesorted ) )
+            throw Error( "Error: generate data failed to generate sorted data." );
         }
         
         
