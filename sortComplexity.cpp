@@ -69,6 +69,7 @@ void merge(
   L[m - start] = INF; // sentinel
   long i = 0;
   long j = 0;
+  // invariant: at each execution of the gaurd, A[start...(start + k)] is sorted.
   for( long k = 0; k < size; k++ )
   {
     if( L[i] < A[j + m] || j > end - m )
@@ -113,9 +114,12 @@ void my_swap( T & i1, T & i2 )
 template<typename T>
 void insertionsort( T A[], const long min, const long max )
 {
+  // invariant: at each execution of the gaurd, A[min...(i-1)] is sorted
   for( long i = min + 1; i <= max; i++ )
   {
     long j = i;
+    // invariant: at each execution of the gaurd,
+    //   A[j] is the minimum element of A[j...i]
     while( j > min && A[j] < A[j-1] )
     {
       my_swap( A[j-1], A[j] );
