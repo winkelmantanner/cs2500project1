@@ -15,9 +15,9 @@ const string WEIGHT_STRING = "heavyheavyheavyheavyheavyheavyheavyheavyheavy";
 
 const long INF = 2147483647;
 
-const long MAX_SIZE = 100000;
+const long MAX_SIZE = 10000;
 
-const long MAX_DATUM_VALUE = 1000000;
+const long MAX_DATUM_VALUE = 10000;
 /*
 struct dataType
 {
@@ -35,6 +35,21 @@ bool operator<( const dataType & lhs, const dataType & rhs )
   return lhs.key < rhs.key;
 }
 */
+
+
+struct Error
+{
+  string message;
+  Error( const string m ) : message(m) {}
+};
+
+ostream& operator<<( ostream & lhs, const Error & rhs )
+{
+  lhs << rhs.message;
+  return lhs;
+}
+
+
 
 // Pre: start is the index of the first element in the left division; m is the index of the first element in the right division; end is the index of the last element in the right division; each division is sorted
 template<typename T>
@@ -141,7 +156,7 @@ enum DataState
 
 
 
-void generateData( long A[], const long size, const DataState state )
+void generateData( long A[], const long size, const DataState state = randomData )
 {
   for( long k = 0; k < size; k++ )
   {
@@ -161,11 +176,26 @@ void generateData( long A[], const long size, const DataState state )
 }
 
 template<typename T>
-void datacopy( T* source, T* destinantion, const long size )
+void datacopy( T * const source, T * const destinantion, const long size )
 {
   for( long k = 0; k < size; k++ )
     destinantion[k] = source[k];
   return;
+}
+
+
+template<typename T>
+bool isSorted( T * const data, const long n, DataState direction = presorted )
+{
+  for( long k = 1; k < n; k++ )
+  {
+    if( ( direction == presorted && data[k] < data[k-1] ) || ( direction == reversesorted && data[k-1] < data[k] ) )
+    {
+      return false;
+    }
+  }
+  
+  return true;
 }
 
 
@@ -177,64 +207,87 @@ int main()
   
   srand( time(NULL) );
   
-  long n = 1;
-  for( long k = 1; n * sqrt(2) < MAX_SIZE; k++ )
+  try
   {
-    n = pow( 2, (k/2) );
-    if( k % 2 == 1 )
-      n = floor( n * sqrt(2) );
     
     
-    for( short dsIndex = 0; dsIndex < 3; dsIndex++ )
+    long n = 1;
+    for( long k = 1; n * sqrt(2) < MAX_SIZE; k++ )
     {
-      if( dsIndex == 0 )
+      n = pow( 2, (k/2) );
+      if( k % 2 == 1 )
+        n = floor( n * sqrt(2) );
+      
+      
+      for( short dsIndex = 0; dsIndex < 3; dsIndex++ )
       {
-        generateData( original_data, n, randomData );
+        if( dsIndex == 0 )
+        {
+          generateData( original_data, n, randomData );
+        }
+        else if( dsIndex == 1 )
+        {
+          generateData( original_data, n, presorted );
+        }
+        else
+        {
+          generateData( original_data, n, reversesorted );
+        }
+        
+        
+        datacopy( original_data, data, n );
+        
+        clock_t start;
+        double duration;
+        start = clock();
+        mergesort( data, 0, n - 1 );
+        duration = clock() - start;
+        
+        if( !isSorted( data, n ) )
+        {
+          throw Error( "Error: mergesort failed to sort the data" );
+        }
+        
+        cout << (duration / CLOCKS_PER_SEC) << " " << flush;
+        
+        
+        datacopy( original_data, data, n );
+        
+        start = clock();
+        insertionsort( data, 0, n - 1 );
+        duration = clock() - start;
+        
+        if( !isSorted( data, n ) )
+        {
+          throw Error( "Error: insertionsort failed to sort the data" );
+        }
+        
+        cout << (duration / CLOCKS_PER_SEC) << " " << flush;
+        
+        
+        datacopy( original_data, data, n );
+        
+        start = clock();
+        bubblesort( data, 0, n - 1 );
+        duration = clock() - start;
+        
+        if( !isSorted( data, n ) )
+        {
+          throw Error( "Error: bubblesort failed to sort the data" );
+        }
+        
+        cout << (duration / CLOCKS_PER_SEC) << " ";
+        cout << k << " " << n << endl;
       }
-      else if( dsIndex == 1 )
-      {
-        generateData( original_data, n, presorted );
-      }
-      else
-      {
-        generateData( original_data, n, reversesorted );
-      }
       
       
-      datacopy( original_data, data, n );
-      
-      clock_t start;
-      double duration;
-      start = clock();
-      mergesort( data, 0, n - 1 );
-      duration = clock() - start;
-      
-      cout << (duration / CLOCKS_PER_SEC) << " " << flush;
-      
-      
-      datacopy( original_data, data, n );
-      
-      start = clock();
-      insertionsort( data, 0, n - 1 );
-      duration = clock() - start;
-      
-      cout << (duration / CLOCKS_PER_SEC) << " " << flush;
-      
-      
-      datacopy( original_data, data, n );
-      
-      start = clock();
-      bubblesort( data, 0, n - 1 );
-      duration = clock() - start;
-      
-      cout << (duration / CLOCKS_PER_SEC) << " ";
-      cout << k << " " << n << endl;
     }
-    
-    
+  
   }
-  
-  
+  catch( const Error e )
+  {
+    cout << e << endl;
+  }
   
   return 0;
 }
