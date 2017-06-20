@@ -221,7 +221,7 @@ int main()
       {
         n = pow( 2, (k/2) );
         if( k % 2 == 1 )
-          n = floor( n * sqrt(2) );
+          n = floor( (n * sqrt(2)) + 0.5 );
       
       
       
