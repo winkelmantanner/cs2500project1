@@ -8,6 +8,8 @@
 #include <cmath>
 #include <ctime>
 #include <cstdlib>
+#include <stdint.h>
+#include <unistd.h>
 using namespace std;
 
 
@@ -16,6 +18,30 @@ const long INF = 2147483647;
 const long MAX_SIZE = 10000;
 
 const long MAX_DATUM_VALUE = 10000;
+
+
+
+// from stackoverflow.com
+
+//  Windows
+#ifdef _WIN32
+#include <intrin.h>
+
+
+uint64_t rdtsc(){
+    return __rdtsc();
+}
+
+//  Linux/GCC
+#else
+
+uint64_t rdtsc(){
+    unsigned int lo,hi;
+    __asm__ __volatile__ ("rdtsc" : "=a" (lo), "=d" (hi));
+    return ((uint64_t)hi << 32) | lo;
+}
+
+#endif
 
 
 struct Error
@@ -239,6 +265,8 @@ int main()
   try
   {
     
+    usleep(100000);
+    
     for( short dsIndex = 0; dsIndex < 3; dsIndex++ )
     {
       long n = 1;
@@ -271,47 +299,47 @@ int main()
         
         datacopy( original_data, data, n );
         
-        clock_t start;
+        long/*clock_t*/ start;
         double duration;
         
-        start = clock();
+        start = rdtsc();
         mergesort( data, 0, n - 1 );
-        duration = clock() - start;
+        duration = rdtsc() - start;
         
         if( !isSorted( data, n ) )
         {
           throw Error( "Error: mergesort failed to sort the data" );
         }
         
-        cout << (duration / CLOCKS_PER_SEC) << " " << flush;
+        cout << (duration /*/ CLOCKS_PER_SEC*/) << " " << flush;
         
         
         datacopy( original_data, data, n );
         
-        start = clock();
+        start = rdtsc();
         insertionsort( data, 0, n - 1 );
-        duration = clock() - start;
+        duration = rdtsc() - start;
         
         if( !isSorted( data, n ) )
         {
           throw Error( "Error: insertionsort failed to sort the data" );
         }
         
-        cout << (duration / CLOCKS_PER_SEC) << " " << flush;
+        cout << (duration /*/ CLOCKS_PER_SEC*/) << " " << flush;
         
         
         datacopy( original_data, data, n );
         
-        start = clock();
+        start = rdtsc();
         bubblesort( data, 0, n - 1 );
-        duration = clock() - start;
+        duration = rdtsc() - start;
         
         if( !isSorted( data, n ) )
         {
           throw Error( "Error: bubblesort failed to sort the data" );
         }
         
-        cout << (duration / CLOCKS_PER_SEC) << " ";
+        cout << (duration /*/ CLOCKS_PER_SEC*/) << " ";
         cout << k << " " << n << endl;
       }
       
