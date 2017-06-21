@@ -11,30 +11,11 @@
 using namespace std;
 
 
-const string WEIGHT_STRING = "heavyheavyheavyheavyheavyheavyheavyheavyheavy";
-
 const long INF = 2147483647;
 
 const long MAX_SIZE = 10000;
 
 const long MAX_DATUM_VALUE = 10000;
-/*
-struct dataType
-{
-  long key;
-  string weight;
-  dataType()
-  {
-    weight = WEIGHT_STRING;
-    key = 0;
-  }
-};
-
-bool operator<( const dataType & lhs, const dataType & rhs )
-{
-  return lhs.key < rhs.key;
-}
-*/
 
 
 struct Error
@@ -50,8 +31,15 @@ ostream& operator<<( ostream & lhs, const Error & rhs )
 }
 
 
-
-// Pre: start is the index of the first element in the left division; m is the index of the first element in the right division; end is the index of the last element in the right division; each division is sorted
+// Description: merge() supposes that A[start...(m-1)] is sorted and 
+//   A[m...end] is sorted and merges the two into one sorted segment 
+//   A[start...end].
+// Precondition: operator< is defined for type T;
+//   start is the index of the first element in the left division;
+//   m is the index of the first element in the right division;
+//   end is the index of the last element in the right division;
+//   each division is sorted
+// Postcondition: A is sorted from start to end.
 template<typename T>
 void merge(
   T A[],
@@ -86,7 +74,13 @@ void merge(
   return;
 }
 
-// Pre: min is the index of the first element in the sort, max is the index of the last element in the sort.
+// Description: mergesort() rearranges the elements of A from position min
+//   to position max, inclusive, to bring them into nondecreasing order.
+// Pre: operator< is defined for type T;
+//   min is the index of the first element in the sort; 
+//   max is the index of the last element in the sort.
+// Postcondition: The elements of A from position min to position max are
+//   in nondecreasing order.
 template<typename T>
 void mergesort( T A[], const long min, const long max )
 {
@@ -101,7 +95,10 @@ void mergesort( T A[], const long min, const long max )
   return;
 }
 
-
+// Description: my_swap() exchanges the data between i1 and i2.
+// Precondition: operator= is defined for type T.
+// Postcondition: The previous value of i1 is in i2, and the previous value
+//   of i2 is in i1.
 template<typename T>
 void my_swap( T & i1, T & i2 )
 {
@@ -111,6 +108,12 @@ void my_swap( T & i1, T & i2 )
   return;
 }
 
+// Description: insertionsort() rearranges the elements of A from position min
+//   to position max, bringing them into nondecreasing order.
+// Precondition: operator< is defined for type T, min is at least 0, and
+//   max is less than the size of A.
+// Postcondition: The elements of A from position min to position max 
+//   are in nondecreasing order.
 template<typename T>
 void insertionsort( T A[], const long min, const long max )
 {
@@ -130,7 +133,10 @@ void insertionsort( T A[], const long min, const long max )
   return;
 }
 
-
+// Description: bubblesort() rearranges the elements of an array A to bring
+//   them into nondecreasing order.
+// Precondition: operator< is defined for type T.
+// Postcondition: The element of A are in nondecreasing order.
 template<typename T>
 void bubblesort( T A[], const long min, const long max )
 {
@@ -150,6 +156,8 @@ void bubblesort( T A[], const long min, const long max )
   return;
 }
 
+
+
 enum DataState
 {
   presorted,
@@ -159,8 +167,15 @@ enum DataState
 
 
 
-
-void generateData( long A[], const long size, const DataState state = randomData )
+// Desciption: generateData() fills A with data of the specified state.
+// Precondition: The size of A is at least size.
+// Postcondition: A is filled with integers that are either nondecreasing,
+//   nonincreasing, or random, depending on the value of state.
+void generateData( 
+  long A[], 
+  const long size, 
+  const DataState state = randomData
+)
 {
   for( long k = 0; k < size; k++ )
   {
@@ -179,15 +194,25 @@ void generateData( long A[], const long size, const DataState state = randomData
   return;
 }
 
+// Description: datacopy() copies the data from source to destination.
+// Precondition: The sizes of both source and destination are at least size;
+//   operator= is defined for type T.
+// Postcondition: The values of destination from position 0 to position (size-1)
+//   are the same as the values at the same indices in source.
 template<typename T>
-void datacopy( T * const source, T * const destinantion, const long size )
+void datacopy( const T * const source, T * const destinantion, const long size )
 {
   for( long k = 0; k < size; k++ )
     destinantion[k] = source[k];
   return;
 }
 
-
+// Description: isSorted() returns whether or not the data in the array data
+//   from position 0 to position n satisfy the specified direction.
+// Precondition: direction should not be randomData;
+//   operator< must be defined for type T.
+// Postcondition: If the data satisfies the specified direction,
+//   then true is returned.  Otherwise false is returned.
 template<typename T>
 bool isSorted( T * const data, const long n, DataState direction = presorted )
 {
@@ -233,13 +258,14 @@ int main()
         {
           generateData( original_data, n, presorted );
           if( !isSorted( original_data, n ) )
-            throw Error( "Error: generate data failed to generate sorted data." );
+            throw Error( "Error: generateData failed to generate sorted data" );
         }
         else
         {
           generateData( original_data, n, reversesorted );
           if( !isSorted( original_data, n, reversesorted ) )
-            throw Error( "Error: generate data failed to generate sorted data." );
+            throw Error( 
+              "Error: generateData failed to generate reverse sorted data" );
         }
         
         
@@ -247,6 +273,7 @@ int main()
         
         clock_t start;
         double duration;
+        
         start = clock();
         mergesort( data, 0, n - 1 );
         duration = clock() - start;
