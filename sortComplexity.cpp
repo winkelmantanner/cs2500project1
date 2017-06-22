@@ -265,7 +265,7 @@ int main()
   try
   {
     
-    usleep(100000);
+    usleep(1000000);
     
     for( short dsIndex = 0; dsIndex < 3; dsIndex++ )
     {
@@ -299,9 +299,10 @@ int main()
         
         datacopy( original_data, data, n );
         
-        long/*clock_t*/ start;
-        double duration;
+        long/*clock_t*/ start = rdtsc();
+        double duration = 0.0;
         
+        usleep(10000);
         start = rdtsc();
         mergesort( data, 0, n - 1 );
         duration = rdtsc() - start;
@@ -316,6 +317,7 @@ int main()
         
         datacopy( original_data, data, n );
         
+        usleep(10000);
         start = rdtsc();
         insertionsort( data, 0, n - 1 );
         duration = rdtsc() - start;
@@ -330,6 +332,7 @@ int main()
         
         datacopy( original_data, data, n );
         
+        usleep(10000);
         start = rdtsc();
         bubblesort( data, 0, n - 1 );
         duration = rdtsc() - start;
