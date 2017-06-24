@@ -19,6 +19,8 @@ const long MAX_SIZE = 10000;
 
 const long MAX_DATUM_VALUE = 10000;
 
+const long TIM_SORT_THRESHOLD = 25;
+
 
 
 // from stackoverflow.com
@@ -183,6 +185,30 @@ void bubblesort( T A[], const long min, const long max )
 }
 
 
+// Description: timsort() rearranges the elements of A from position min
+//   to position max, inclusive, to bring them into nondecreasing order.
+// Pre: operator< is defined for type T;
+//   min is the index of the first element in the sort;
+//   max is the index of the last element in the sort.
+// Postcondition: The elements of A from position min to position max are
+//   in nondecreasing order.
+template<typename T>
+void timsort( T A[], const long min, const long max )
+{
+  if( max - min < TIM_SORT_THRESHOLD )
+  {
+    insertionsort( A, min, max );
+  }
+  else
+  {
+    long center = (max + min + 1) / 2;
+    timsort( A, min, center - 1 );
+    timsort( A, center, max );
+    merge( A, min, center, max );
+  }
+  return;
+}
+
 
 enum DataState
 {
@@ -267,6 +293,7 @@ int main()
     
     usleep(1000000);
     
+    
     for( short dsIndex = 0; dsIndex < 3; dsIndex++ )
     {
       long n = 1;
@@ -301,6 +328,21 @@ int main()
         
         long/*clock_t*/ start = rdtsc();
         double duration = 0.0;
+        
+        usleep(10000);
+        start = rdtsc();
+        timsort( data, 0, n - 1 );
+        duration = rdtsc() - start;
+        
+        if( !isSorted( data, n ) )
+        {
+          throw Error( "Error: timsort failed to sort the data" );
+        }
+        
+        cout << (duration /*/ CLOCKS_PER_SEC*/) << " " << flush;
+        
+        
+        datacopy( original_data, data, n );
         
         usleep(10000);
         start = rdtsc();
