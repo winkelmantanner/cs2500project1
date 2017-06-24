@@ -2,7 +2,8 @@
 // Instructor: Michael Gosnell
 // Class: cs2500 Section: A
 // Summer Semester 2017
-// Purpose: Compare the complexity of mergesort, bubblesort, and insertionsort.
+// Purpose: Compare the run time complexity of
+//   Timsort, Merge sort, Bubble sort, and Insertion sort.
 
 #include <iostream>
 #include <cmath>
@@ -12,18 +13,22 @@
 #include <unistd.h>
 using namespace std;
 
-
+// the maximum value of a 4-Byte integer
 const long INF = 2147483647;
 
+// the maximum size of data used to test the algorithms
 const long MAX_SIZE = 10000;
 
+// one more than the maximum value of data in the test
+//   (the minimum is 0)
 const long MAX_DATUM_VALUE = 10000;
 
+// the lowest size at which Timsort recursively calls itself and merge
 const long TIM_SORT_THRESHOLD = 25;
 
 
-
-// from stackoverflow.com
+// source:
+// https://stackoverflow.com/questions/13772567/get-cpu-cycle-count
 
 //  Windows
 #ifdef _WIN32
@@ -45,7 +50,7 @@ uint64_t rdtsc(){
 
 #endif
 
-
+// the type of object to be thrown if something goes wrong
 struct Error
 {
   string message;
@@ -279,6 +284,27 @@ bool isSorted( T * const data, const long n, DataState direction = presorted )
   return true;
 }
 
+// Description: isEqual() returns whether or not the two passed
+//   arrays have eqivalent elements in positions 0 through (n-1)
+//   inclusive.
+// Precondition: array1 and array2 must be of at least size n.
+// Postcondition: The following boolean value is returned:
+//   (array1[0] == array2[0]) and (array1[1] == array2[1])
+//   and ... and (array1[n-1] == array2[n-1])
+template<typename T>
+bool isEqual( T * const array1, T * const array2, const long n )
+{
+  bool eq = true;
+  long k = 0;
+  while( eq && k < n )
+  {
+    if( array1[k] != array2[k] )
+      eq = false;
+    k++;
+  }
+  return eq;
+}
+
 
 int main()
 {
@@ -325,6 +351,10 @@ int main()
         
         
         datacopy( original_data, data, n );
+        if( !isEqual( original_data, data, n ) )
+        {
+          throw Error( "Error: datacopy() failed" );
+        }
         
         long/*clock_t*/ start = rdtsc();
         double duration = 0.0;
@@ -338,11 +368,19 @@ int main()
         {
           throw Error( "Error: timsort failed to sort the data" );
         }
+        if( n >= 2 && isSorted( data, n, reversesorted ) )
+        {
+          throw Error( "Error: isSorted() malfunction" );
+        }
         
         cout << (duration /*/ CLOCKS_PER_SEC*/) << " " << flush;
         
         
         datacopy( original_data, data, n );
+        if( !isEqual( original_data, data, n ) )
+        {
+          throw Error( "Error: datacopy() failed" );
+        }
         
         usleep(10000);
         start = rdtsc();
@@ -358,6 +396,10 @@ int main()
         
         
         datacopy( original_data, data, n );
+        if( !isEqual( original_data, data, n ) )
+        {
+          throw Error( "Error: datacopy() failed" );
+        }
         
         usleep(10000);
         start = rdtsc();
@@ -373,6 +415,10 @@ int main()
         
         
         datacopy( original_data, data, n );
+        if( !isEqual( original_data, data, n ) )
+        {
+          throw Error( "Error: datacopy() failed" );
+        }
         
         usleep(10000);
         start = rdtsc();
