@@ -1,4 +1,4 @@
-// Programmer: Tanner Winkelman
+// Programmers: Lucas and Tanner Winkelman
 // Instructor: Michael Gosnell
 // Class: cs2500 Section: A
 // Summer Semester 2017
@@ -26,10 +26,13 @@ const long MAX_DATUM_VALUE = 10000;
 // the lowest size at which Timsort recursively calls itself and merge
 const long TIM_SORT_THRESHOLD = 25;
 
+// the program makes sure that data that is not supposed to be
+// sorted is not sorted if the size is above this threshold
+const long RANDOMNESS_THRESHOLD = 20;
+
 
 // source:
 // https://stackoverflow.com/questions/13772567/get-cpu-cycle-count
-
 //  Windows
 #ifdef _WIN32
 #include <intrin.h>
@@ -49,6 +52,17 @@ uint64_t rdtsc(){
 }
 
 #endif
+
+
+// the three states of data that the sorting algorithms are being tested on
+enum DataState
+{
+  presorted,
+  reversesorted,
+  randomData
+};
+
+
 
 // the type of object to be thrown if something goes wrong
 struct Error
@@ -90,7 +104,8 @@ void merge(
   L[m - start] = INF; // sentinel
   long i = 0;
   long j = 0;
-  // invariant: at each execution of the gaurd, A[start...(start + k)] is sorted.
+  // invariant: at each execution of the gaurd, 
+  //   A[start...(start + k)] is sorted.
   for( long k = 0; k < size; k++ )
   {
     if( L[i] < A[j + m] || j > end - m )
@@ -173,10 +188,12 @@ void insertionsort( T A[], const long min, const long max )
 template<typename T>
 void bubblesort( T A[], const long min, const long max )
 {
-  // invariant: at each execution of the gaurd, the last i elements are the largest i elements in sorted order
+  // invariant: at each execution of the gaurd,
+  //   the last i elements are the largest i elements in sorted order
   for( long i = 0; i < max - min + 1; i++ )
   {
-    // invariant: at each execution of the gaurd, the largest element of A[min...j] is A[j]
+    // invariant: at each execution of the gaurd, 
+    //   the largest element of A[min...j] is A[j]
     for( long j = min; j < max - i; j++ )
     {
       if( A[j+1] < A[j] )
@@ -213,15 +230,6 @@ void timsort( T A[], const long min, const long max )
   }
   return;
 }
-
-
-enum DataState
-{
-  presorted,
-  reversesorted,
-  randomData
-};
-
 
 
 // Desciption: generateData() fills A with data of the specified state.
@@ -275,7 +283,8 @@ bool isSorted( T * const data, const long n, DataState direction = presorted )
 {
   for( long k = 1; k < n; k++ )
   {
-    if( ( direction == presorted && data[k] < data[k-1] ) || ( direction == reversesorted && data[k-1] < data[k] ) )
+    if( ( direction == presorted && data[k] < data[k-1] ) 
+      || ( direction == reversesorted && data[k-1] < data[k] ) )
     {
       return false;
     }
@@ -334,19 +343,31 @@ int main()
         if( dsIndex == 0 )
         {
           generateData( original_data, n, randomData );
+          if( n > RANDOMNESS_THRESHOLD
+            && ( isSorted( original_data, n )
+              || isSorted( original_data, n, reversesorted )
+          ) )
+          {
+            throw Error( "Error: generateData failed to generate random data" );
+          }
+            
         }
         else if( dsIndex == 1 )
         {
           generateData( original_data, n, presorted );
           if( !isSorted( original_data, n ) )
+          {
             throw Error( "Error: generateData failed to generate sorted data" );
+          }
         }
         else
         {
           generateData( original_data, n, reversesorted );
           if( !isSorted( original_data, n, reversesorted ) )
+          {
             throw Error( 
               "Error: generateData failed to generate reverse sorted data" );
+          }
         }
         
         
