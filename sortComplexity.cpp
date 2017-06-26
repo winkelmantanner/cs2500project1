@@ -184,7 +184,7 @@ void insertionsort( T A[], const long min, const long max )
 // Description: bubblesort() rearranges the elements of an array A to bring
 //   them into nondecreasing order.
 // Precondition: operator< is defined for type T.
-// Postcondition: The element of A are in nondecreasing order.
+// Postcondition: The elements of A are in nondecreasing order.
 template<typename T>
 void bubblesort( T A[], const long min, const long max )
 {
@@ -328,11 +328,17 @@ int main()
     
     usleep(1000000);
     
-    
+    // invariant: at each execution of the guard,
+    //   tests have been run for all data sizes for the data states
+    //   associated with the values 0...(dsIndex-1)
     for( short dsIndex = 0; dsIndex < 3; dsIndex++ )
     {
       long n = 1;
-      for( long k = 1; n * sqrt(2) < MAX_SIZE; k++ )
+      
+      // invariant: at each execution of the guard,
+      //   tests have been run on the sizes
+      //   1...floor(sqrt(2)^(k-1) + 0.5)
+      for( long k = 1; n * sqrt(2) <= MAX_SIZE; k++ )
       {
         n = pow( 2, (k/2) );
         if( k % 2 == 1 )
@@ -377,7 +383,7 @@ int main()
           throw Error( "Error: datacopy() failed" );
         }
         
-        long/*clock_t*/ start = rdtsc();
+        long start = rdtsc();
         double duration = 0.0;
         
         usleep(10000);
@@ -394,7 +400,7 @@ int main()
           throw Error( "Error: isSorted() malfunction" );
         }
         
-        cout << (duration /*/ CLOCKS_PER_SEC*/) << " " << flush;
+        cout << duration << " " << flush;
         
         
         datacopy( original_data, data, n );
@@ -413,7 +419,7 @@ int main()
           throw Error( "Error: mergesort failed to sort the data" );
         }
         
-        cout << (duration /*/ CLOCKS_PER_SEC*/) << " " << flush;
+        cout << duration << " " << flush;
         
         
         datacopy( original_data, data, n );
@@ -432,7 +438,7 @@ int main()
           throw Error( "Error: insertionsort failed to sort the data" );
         }
         
-        cout << (duration /*/ CLOCKS_PER_SEC*/) << " " << flush;
+        cout << duration << " " << flush;
         
         
         datacopy( original_data, data, n );
@@ -451,7 +457,7 @@ int main()
           throw Error( "Error: bubblesort failed to sort the data" );
         }
         
-        cout << (duration /*/ CLOCKS_PER_SEC*/) << " ";
+        cout << duration << " ";
         cout << k << " " << n << endl;
       }
       
