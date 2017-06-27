@@ -52,6 +52,7 @@ uint64_t rdtsc(){
 }
 
 #endif
+// end of Stack Overflow excerpt
 
 
 // the three states of data that the sorting algorithms are being tested on
@@ -61,8 +62,6 @@ enum DataState
   reversesorted,
   randomData
 };
-
-
 
 // the type of object to be thrown if something goes wrong
 struct Error
@@ -262,10 +261,10 @@ void generateData(
 // Description: datacopy() copies the data from source to destination.
 // Precondition: The sizes of both source and destination are at least size;
 //   operator= is defined for type T.
-// Postcondition: The values of destination from position 0 to position (size-1)
+// Postcondition: The values of destination from position 0 to position size-1
 //   are the same as the values at the same indices in source.
 template<typename T>
-void datacopy( const T * const source, T * const destinantion, const long size )
+void datacopy( const T* const source, T* const destinantion, const long size )
 {
   for( long k = 0; k < size; k++ )
     destinantion[k] = source[k];
@@ -279,7 +278,7 @@ void datacopy( const T * const source, T * const destinantion, const long size )
 // Postcondition: If the data satisfies the specified direction,
 //   then true is returned.  Otherwise false is returned.
 template<typename T>
-bool isSorted( T * const data, const long n, DataState direction = presorted )
+bool isSorted( T* const data, const long n, DataState direction = presorted )
 {
   for( long k = 1; k < n; k++ )
   {
@@ -301,7 +300,7 @@ bool isSorted( T * const data, const long n, DataState direction = presorted )
 //   (array1[0] == array2[0]) and (array1[1] == array2[1])
 //   and ... and (array1[n-1] == array2[n-1])
 template<typename T>
-bool isEqual( T * const array1, T * const array2, const long n )
+bool isEqual( T* const array1, T* const array2, const long n )
 {
   bool eq = true;
   long k = 0;
@@ -345,7 +344,7 @@ int main()
           n = floor( (n * sqrt(2)) + 0.5 );
       
       
-      
+        // generate data and check to make sure it is generated correctly
         if( dsIndex == 0 )
         {
           generateData( original_data, n, randomData );
@@ -354,7 +353,8 @@ int main()
               || isSorted( original_data, n, reversesorted )
           ) )
           {
-            throw Error( "Error: generateData failed to generate random data" );
+            throw 
+              Error( "Error: generateData failed to generate random data" );
           }
             
         }
@@ -363,7 +363,8 @@ int main()
           generateData( original_data, n, presorted );
           if( !isSorted( original_data, n ) )
           {
-            throw Error( "Error: generateData failed to generate sorted data" );
+            throw 
+              Error( "Error: generateData failed to generate sorted data" );
           }
         }
         else
@@ -377,14 +378,17 @@ int main()
         }
         
         
+        // the rdtsc function is from the stack overflow excerpt
+        long start = rdtsc();
+        double duration = 0.0;
+        
+        
+        // test Timsort
         datacopy( original_data, data, n );
         if( !isEqual( original_data, data, n ) )
         {
           throw Error( "Error: datacopy() failed" );
         }
-        
-        long start = rdtsc();
-        double duration = 0.0;
         
         usleep(10000);
         start = rdtsc();
@@ -403,6 +407,8 @@ int main()
         cout << duration << " " << flush;
         
         
+        
+        // test Merge sort
         datacopy( original_data, data, n );
         if( !isEqual( original_data, data, n ) )
         {
@@ -422,6 +428,7 @@ int main()
         cout << duration << " " << flush;
         
         
+        // test Insertion sort
         datacopy( original_data, data, n );
         if( !isEqual( original_data, data, n ) )
         {
@@ -441,6 +448,7 @@ int main()
         cout << duration << " " << flush;
         
         
+        // test Bubble sort
         datacopy( original_data, data, n );
         if( !isEqual( original_data, data, n ) )
         {
