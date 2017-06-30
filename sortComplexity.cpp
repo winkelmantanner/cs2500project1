@@ -77,8 +77,8 @@ ostream& operator<<( ostream & lhs, const Error & rhs )
 }
 
 
-// Description: merge() supposes that A[start...(m-1)] is sorted and 
-//   A[m...end] is sorted and merges the two into one sorted segment 
+// Description: merge() supposes that A[start...(m-1)] is sorted and
+//   A[m...end] is sorted and merges the two into one sorted segment
 //   A[start...end].
 // Precondition: operator< is defined for type T;
 //   start is the index of the first element in the left division;
@@ -88,11 +88,11 @@ ostream& operator<<( ostream & lhs, const Error & rhs )
 // Postcondition: A is sorted from start to end.
 template<typename T>
 void merge(
-  T A[],
-  const long start,
-  const long m,
-  const long end
-)
+           T A[],
+           const long start,
+           const long m,
+           const long end
+           )
 {
   long size = end - start + 1;
   T * L = new T[m - start + 1];  // with space for sentinel
@@ -103,7 +103,7 @@ void merge(
   L[m - start] = INF; // sentinel
   long i = 0;
   long j = 0;
-  // invariant: at each execution of the gaurd, 
+  // invariant: at each execution of the gaurd,
   //   A[start...(start + k)] is sorted.
   for( long k = 0; k < size; k++ )
   {
